@@ -1,0 +1,23 @@
+name: data
+description: "Data Module"
+
+version: 1.0.0+1
+publish_to: 'none'
+environment:
+  sdk: '>=3.3.2 <4.0.0'
+
+dependencies:
+
+  domain:
+    path: ../domain
+
+  lints: ^4.0.0
+  sqflite: ^2.3.3+1
+
+dev_dependencies:
+
+flutter:
+  assets:
+    - ../../assets/products.json
+
+
