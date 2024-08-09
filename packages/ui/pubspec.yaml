@@ -1,0 +1,23 @@
+name: ui
+description: "Ui Module"
+
+version: 1.0.0+1
+publish_to: 'none'
+environment:
+  sdk: '>=3.3.2 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  presentation:
+    path: ../presentation
+  flutter_riverpod: ^2.5.1
+  go_router: ^14.2.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
