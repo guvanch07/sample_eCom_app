@@ -3,16 +3,15 @@ import 'package:ecommerce_app/providers/notifiers/auth/auth_notifier.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class CreateUserScreen extends StatefulWidget {
+  const CreateUserScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<CreateUserScreen> createState() => _CreateUserScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _CreateUserScreenState extends State<CreateUserScreen> {
   final nameController = TextEditingController();
   final passwordController = TextEditingController();
 
@@ -37,7 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
+      appBar: AppBar(title: const Text('Register')),
       body: Padding(
         padding: const EdgeInsets.all(24.0).copyWith(top: 70),
         child: Form(
@@ -64,17 +63,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 builder: (context, ref, _) {
                   final isLoading = ref.watch(authStateProvider).isLoading;
                   final authStateAction = ref.read(authStateProvider.notifier);
-                  ref.listen(
-                      authStateProvider.select((value) => value.error),
-                      (_, error) =>
-                          error != null ? _showSnack(context, error) : null);
-
                   return CupertinoButton.filled(
                     onPressed: isLoading
                         ? null
                         : () {
                             if (_formKey.currentState?.validate() ?? false) {
-                              authStateAction.login(
+                              authStateAction.register(
                                 nameController.text,
                                 passwordController.text,
                               );
@@ -82,18 +76,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                     child: isLoading
                         ? const CircularProgressIndicator.adaptive()
-                        : const Text('Login'),
+                        : const Text('Register'),
                   );
                 },
               ),
-              const SizedBox(height: 20),
-              Text('Not registerd yet?',
-                  style: Theme.of(context).textTheme.bodyLarge),
-              const SizedBox(height: 10),
-              OutlinedButton(
-                onPressed: () => context.pushNamed('register'),
-                child: const Text('Register'),
-              )
             ],
           ),
         ),
@@ -106,6 +92,8 @@ class _LoginScreenState extends State<LoginScreen> {
       return 'Username cannot be empty';
     } else if (value.length < 4) {
       return 'Username must be at least 4 characters long';
+    } else if (!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(value)) {
+      return 'Username can only contain letters, numbers, and underscores';
     }
     return null;
   }
@@ -115,14 +103,15 @@ class _LoginScreenState extends State<LoginScreen> {
       return 'Password cannot be empty';
     } else if (value.length < 6) {
       return 'Password must be at least 6 characters long';
+    } else if (!RegExp(r'[A-Z]').hasMatch(value)) {
+      return 'Password must contain at least one uppercase letter';
+    } else if (!RegExp(r'[a-z]').hasMatch(value)) {
+      return 'Password must contain at least one lowercase letter';
+    } else if (!RegExp(r'[0-9]').hasMatch(value)) {
+      return 'Password must contain at least one number';
+    } else if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value)) {
+      return 'Password must contain at least one special character';
     }
     return null;
   }
-
-  void _showSnack(BuildContext context, String text) =>
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(text),
-        ),
-      );
 }

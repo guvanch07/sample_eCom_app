@@ -10,13 +10,13 @@ final class AuthRepository implements IAuthRepository {
   const AuthRepository({required this.databaseService});
 
   @override
-  Future<void> createUser(String username, String password) async {
+  Future<int?> createUser(String username, String password) async {
     final db = await databaseService.database;
     final data = {
       'username': username,
       'password': password,
     };
-    await db.insert(
+    return await db.insert(
       _users,
       data,
       conflictAlgorithm: ConflictAlgorithm.replace,
@@ -28,11 +28,10 @@ final class AuthRepository implements IAuthRepository {
     final db = await databaseService.database;
 
     final result = await db.query(
-      'users',
+      _users,
       where: 'username = ?',
       whereArgs: [username],
     );
-
     return result.isNotEmpty ? result.first : null;
   }
 }

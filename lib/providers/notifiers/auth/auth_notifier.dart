@@ -3,7 +3,8 @@ import 'package:ecommerce_app/providers/notifiers/auth/auth_state.dart';
 import 'package:ecommerce_app/providers/providers.dart';
 import 'package:riverpod/riverpod.dart';
 
-final authStateProvider = StateNotifierProvider<AuthNotifier, AuthState>(
+final authStateProvider =
+    StateNotifierProvider.autoDispose<AuthNotifier, AuthState>(
   (ref) => AuthNotifier(
     ref.watch<IAuthRepository>(authProvider),
   ),
@@ -28,6 +29,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     } else {
       state = state.copyWith(
         isAuthenticated: false,
+        error: 'Invalid username or password',
         isLoading: false,
       );
     }
@@ -35,8 +37,19 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   Future<void> register(String username, String password) async {
     state = state.copyWith(isLoading: true);
-    await _authRepository.createUser(username, password);
-    state = state.copyWith(isLoading: false, isAuthenticated: true);
+    final created = await _authRepository.createUser(username, password);
+    if (created != null) {
+      state = state.copyWith(
+        isAuthenticated: true,
+        username: username,
+        isLoading: false,
+      );
+    } else {
+      state = state.copyWith(
+        isAuthenticated: false,
+        isLoading: false,
+      );
+    }
   }
 
   void logout() {
